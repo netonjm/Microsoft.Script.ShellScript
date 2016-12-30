@@ -1,0 +1,7 @@
+*.userprefs
+packages
+bin
+obj
+bin
+debug
+tools/nuget.exe
