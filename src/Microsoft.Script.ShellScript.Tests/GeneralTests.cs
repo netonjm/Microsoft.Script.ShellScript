@@ -42,6 +42,13 @@ namespace Microsoft.Script.ShellScriptTests
 		}
 
 		[Test]
+		public void TestSsh ()
+		{
+			Assert.IsTrue (Network.TestSsh (remote), "#1");
+			Assert.IsFalse (Network.TestSsh ("10.67.1.15"), "#2");
+		}
+
+		[Test]
 		[Ignore ("if sudo password is wrong we don't get here any result and the test fails")]
 		public void ScanRaspberryNetwork ()
 		{

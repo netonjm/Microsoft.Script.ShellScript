@@ -77,6 +77,11 @@ namespace Microsoft.Script
 			return $"arp {command}";
 		}
 
+		public static string TestSsh (string ip, string user = "pi", int timeout = 2)
+		{
+			return $"ssh -q -o BatchMode=yes -o ConnectTimeout={timeout} {user}@{ip} \'echo 2>&1\' && echo \'1\' || echo \'0\'";
+		}
+
 		#endregion
 
 		#region File system
@@ -96,7 +101,7 @@ namespace Microsoft.Script
 			return $"cat .ssh/id_rsa.pub | ssh {user}@{ip} 'cat >> .ssh/authorized_keys'";
 		}
 
-		public static string CopyFile (string source, string destination, string ip = null, string user = "pi")
+		public static string CopyFile (string source, string destination)
 		{
 			return $"cp {source} {destination}";
 		}

@@ -13,6 +13,11 @@ namespace Microsoft.Script
 			return Command.GetArp (arguments).ExecuteBash (ip, user);
 		}
 
+		public static bool TestSsh (string ip, string user = "pi", int timeout = 2)
+		{
+			return Command.TestSsh (ip, user, timeout).ExecuteBash () == "1";
+		}
+
 		public static List<Tuple<string, string, string>> ScanRaspberryNetwork (string range, string password)
 		{
 			//TODO: force send sudo password command provokes a empty error, we need better way to do this
