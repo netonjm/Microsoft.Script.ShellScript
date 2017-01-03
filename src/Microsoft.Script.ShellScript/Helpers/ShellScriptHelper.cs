@@ -44,7 +44,7 @@ namespace Microsoft.Script
 			return variablesDictionary;
 		}
 
-		public static void ExecuteCommand (string fileName, out string output, out string error, string arguments = "", bool debug = false)
+		public static void ExecuteCommand (string fileName, out string output, out string error, string arguments = "")
 		{
 			using (var process = new Process ()) {
 				process.StartInfo.FileName = fileName;

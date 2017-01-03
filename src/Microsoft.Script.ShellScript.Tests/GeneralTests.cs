@@ -123,7 +123,6 @@ namespace Microsoft.Script.ShellScriptTests
 		}
 
 		[TestCase ("/Applications/Safari.app/Contents/MacOS/Safari", "", "Safari")]
-		//[TestCase ("",remote, "")]
 		public void KillProcess (string process, string remoteIp, string processName)
 		{
 			System.Diagnostics.Process.Start (process);
