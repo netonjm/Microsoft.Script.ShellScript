@@ -44,7 +44,8 @@ namespace Microsoft.Script
 			return variablesDictionary;
 		}
 
-		public static void ExecuteCommand (string fileName, out string output, out string error, string arguments = "")
+		public static void ExecuteCommand (string fileName, out string output, out string error, string arguments = "", string workingDirectory = null, 
+		                                   Dictionary<string, string> environmentVariables = null)
 		{
 			using (var process = new Process ()) {
 				process.StartInfo.FileName = fileName;
@@ -53,6 +54,16 @@ namespace Microsoft.Script
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.RedirectStandardError = true;
 				process.StartInfo.CreateNoWindow = true;
+
+				if (workingDirectory != null)
+					process.StartInfo.WorkingDirectory = workingDirectory;
+
+				if (environmentVariables != null) {
+					foreach (var item in environmentVariables) {
+						process.StartInfo.EnvironmentVariables [item.Key] = item.Value;
+					}
+				}
+
 				process.Start ();
 				//* Read the output (or the error)
 				output = process.StandardOutput.ReadToEnd ().Trim ();
