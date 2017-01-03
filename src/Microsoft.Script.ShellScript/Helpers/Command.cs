@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Microsoft.Script
 {
@@ -46,6 +47,20 @@ namespace Microsoft.Script
 		{
 			return $"ps -eo pid,args,user";
 		}
+
+		public static string GetProcesses ()
+		{
+			return $"ps -eo pid,args";
+		}
+
+		public static string GetProcess (int pid)
+		{
+			return $"ps -p {pid} -o args";
+		}
+
+		public static string GetPids (string process)
+		{
+			return $"pidof {process}";
 		}
 
 		public static string GetActualPID ()

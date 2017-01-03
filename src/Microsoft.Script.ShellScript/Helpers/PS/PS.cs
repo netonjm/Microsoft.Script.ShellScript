@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Microsoft.Script
 {
@@ -7,6 +8,38 @@ namespace Microsoft.Script
 		public static void Kill (int pid, bool force = false, string ip = null, string user = "pi")
 		{
 			Command.KillProcess (pid, force).ExecuteBash (ip, user);
+		}
+
+		public static int [] GetMonoPids (string ip = null, string user = "pi")
+		{
+			return GetPids ("mono", ip, user);
+		}
+
+		public static Tuple<int, string> [] GetMonoProcesses (string ip = null, string user = "pi")
+		{
+			var pids = GetMonoPids (ip, user);
+			var elements = new Tuple<int, string> [pids.Length];
+			for (int i = 0; i < pids.Length; i++) {
+				var actual = pids [i];
+				elements [i] = new Tuple<int, string> (actual, GetProcess (actual, ip));
+			}
+			return elements;
+		}
+
+		public static string GetProcess (int pid, string ip = null, string user = "pi")
+		{
+			var processLine = Command.GetProcess (pid).ExecuteBash (ip, user)
+			                         .Split ('\n')
+			                         .Skip (1)
+			                         .FirstOrDefault ();
+			return processLine;
+		}
+
+		public static int[] GetPids (string process, string ip = null, string user = "pi")
+		{
+			return Command.GetPids (process).ExecuteBash (ip, user)
+				          .Split (new [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+				          .Select (s => int.Parse (s)).ToArray ();
 		}
 
 		static Tuple<int, int, int> ExtractTitleIndexes (string title)
@@ -47,5 +80,30 @@ namespace Microsoft.Script
 			return processes;
 		}
 
+		public static Tuple<int, string> [] GetList (string ip = null, string user = "pi")
+		{
+			var variables = Command.GetDetailedProcess ().ExecuteBash (ip, user);
+			var lines = variables.Split ('\n');
+
+			//generated index
+			var indexes = ExtractTitleIndexes (lines [0]);
+
+			//we don't want start from first index
+			int start = 1;
+			var processes = new Tuple<int, string> [lines.Length - start];
+
+			for (int i = start; i < lines.Length; i++) {
+
+				var pid = lines [i].Substring (0, indexes.Item1 + 2);
+				var command = lines [i].Substring (indexes.Item2 + 2);
+
+				processes [i - start] = new Tuple<int, string> (
+					int.Parse (pid.Trim ()),
+					command.Trim ()
+				);
+			}
+
+			return processes;
+		}
 	}
 }
