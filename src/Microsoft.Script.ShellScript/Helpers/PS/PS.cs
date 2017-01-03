@@ -42,6 +42,11 @@ namespace Microsoft.Script
 				          .Select (s => int.Parse (s)).ToArray ();
 		}
 
+		public static string RunMonoBackground (string executable, string ip, string user = "pi")
+		{
+			return Command.RunMonoBackground (executable).ExecuteBash (ip, user);
+		}
+
 		static Tuple<int, int, int> ExtractTitleIndexes (string title)
 		{
 			var pid_position = title.IndexOf ("PID", StringComparison.Ordinal) + "PID".Length;

@@ -48,6 +48,38 @@ namespace Microsoft.Script.ShellScriptTests
 			Assert.AreEqual (value, Network.TestSsh (ip), "#1");
 		}
 
+		[TestCase (remote, "/home/pi/deployed/RaspMonoProject.exe", "mono")]
+		public void GetMonoProcess (string ip, string file, string processName)
+		{
+			//hacky but openssh seems to ignore signals
+			PS.RunMonoBackground ($"{file}", ip);
+			//ps x | grep 'mono RaspMonoProject.exe' | grep -v 'grep 'mono RaspMonoProject.exe' | awk '{ print $1 }' | xargs kill
+			var processes = PS.GetMonoProcesses (ip).Where (s => s.Item2.Equals ($"{processName} {file}"));
+			Assert.IsTrue (processes.Any (), "#1");
+			foreach (var process in processes) {
+				PS.Kill (process.Item1, true, ip);
+			}
+			processes = PS.GetMonoProcesses (ip).Where (s => s.Item2.Equals ($"{processName} {file}"));
+			Assert.IsFalse (processes.Any (), "#1");
+		}
+
+		[TestCase (remote, "/home/pi/deployed/RaspMonoProject.exe", "mono")]
+		public void RunBackground (string ip, string file, string processName)
+		{
+			//hacky but openssh seems to ignore signals
+			PS.RunMonoBackground ($"{file}", ip);
+			//ps x | grep 'mono RaspMonoProject.exe' | grep -v 'grep 'mono RaspMonoProject.exe' | awk '{ print $1 }' | xargs kill
+			var list = PS.GetPids (processName, ip);
+			Assert.IsTrue (list.Count () > 0, "#1");
+
+			foreach (var item in list) {
+				PS.Kill (item, true, ip);
+			}
+
+			list = PS.GetPids (processName, ip);
+			Assert.IsTrue (list.Count () == 0, "#2");
+		}
+
 		[Test]
 		[Ignore ("if sudo password is wrong we don't get here any result and the test fails")]
 		public void ScanRaspberryNetwork ()

@@ -93,6 +93,11 @@ namespace Microsoft.Script
 			return $"arp {command}";
 		}
 
+		public static string RunMonoBackground (string executable)
+		{
+			return $"nohup mono {executable} >> /dev/null 2>&1 &";
+		}
+
 		public static string TestSsh (string ip, string user = "pi", int timeout = 2)
 		{
 			return $"ssh -q -o BatchMode=yes -o ConnectTimeout={timeout} {user}@{ip} \'echo 2>&1\' && echo \'1\' || echo \'0\'";
