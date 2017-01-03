@@ -41,11 +41,11 @@ namespace Microsoft.Script.ShellScriptTests
 			Assert.IsNotEmpty (d.LastMessage);
 		}
 
-		[Test]
-		public void TestSsh ()
+		[TestCase ("10.67.1.15", false)]
+		[TestCase (remote, true)]
+		public void TestSsh (string ip, bool value)
 		{
-			Assert.IsTrue (Network.TestSsh (remote), "#1");
-			Assert.IsFalse (Network.TestSsh ("10.67.1.15"), "#2");
+			Assert.AreEqual (value, Network.TestSsh (ip), "#1");
 		}
 
 		[Test]
