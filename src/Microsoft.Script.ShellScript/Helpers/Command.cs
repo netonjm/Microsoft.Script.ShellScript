@@ -42,9 +42,10 @@ namespace Microsoft.Script
 
 		#region Process
 
-		public static string GetProcess ()
+		public static string GetDetailedProcess ()
 		{
-			return "ps -eo pid,args,user";
+			return $"ps -eo pid,args,user";
+		}
 		}
 
 		public static string GetActualPID ()

@@ -19,9 +19,9 @@ namespace Microsoft.Script
 			return new Tuple<int, int, int> (pid_position, args_position, user_position);
 		}
 
-		public static Tuple<int, string, string> [] GetList (string ip = null, string user = "pi")
+		public static Tuple<int, string, string> [] GetDetailedList (string ip = null, string user = "pi")
 		{
-			var variables = Command.GetProcess ().ExecuteBash (ip, user);
+			var variables = Command.GetDetailedProcess ().ExecuteBash (ip, user);
 			var lines = variables.Split ('\n');
 
 			//generated index
