@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Microsoft.Script.ShellScript</id>
-    <version>0.3.0.0</version>
+    <version>0.3.1.0</version>
     <title>Shell Script Library</title>
     <authors>Jose Medrano</authors>
     <owners>Microsoft Corp.</owners>
