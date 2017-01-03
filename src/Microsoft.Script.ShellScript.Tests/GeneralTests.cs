@@ -54,13 +54,13 @@ namespace Microsoft.Script.ShellScriptTests
 			//hacky but openssh seems to ignore signals
 			PS.RunMonoBackground ($"{file}", ip);
 			//ps x | grep 'mono RaspMonoProject.exe' | grep -v 'grep 'mono RaspMonoProject.exe' | awk '{ print $1 }' | xargs kill
-			var processes = PS.GetMonoProcesses (ip).Where (s => s.Item2.Equals ($"{processName} {file}"));
+			var processes = PS.GetMonoProcess (file, ip);
 			Assert.IsTrue (processes.Any (), "#1");
 			foreach (var process in processes) {
 				PS.Kill (process.Item1, true, ip);
 			}
-			processes = PS.GetMonoProcesses (ip).Where (s => s.Item2.Equals ($"{processName} {file}"));
-			Assert.IsFalse (processes.Any (), "#1");
+			processes = PS.GetMonoProcess (file, ip);
+			Assert.IsFalse (processes.Any (), "#2");
 		}
 
 		[TestCase (remote, "/home/pi/deployed/RaspMonoProject.exe", "mono")]

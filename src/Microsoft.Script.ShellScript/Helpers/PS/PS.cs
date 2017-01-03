@@ -26,6 +26,12 @@ namespace Microsoft.Script
 			return elements;
 		}
 
+		public static Tuple<int, string> [] GetMonoProcess (string processName, string ip = null, string user = "pi")
+		{
+			return GetMonoProcesses (ip, user).Where (s => s.Item2.EndsWith ($" {processName}", StringComparison.Ordinal))
+			                                           .ToArray ();
+		}
+
 		public static string GetProcess (int pid, string ip = null, string user = "pi")
 		{
 			var processLine = Command.GetProcess (pid).ExecuteBash (ip, user)
