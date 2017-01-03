@@ -97,6 +97,22 @@ namespace Microsoft.Script.ShellScriptTests
 
 		#region PS
 
+		[TestCase (remoteExecutable, remote)]
+		public void ExecuteMonoProcess (string process, string remoteIp)
+		{
+			Assert.IsTrue (IO.File.Exist (process, remoteIp), "#0 file doesn't exists in remote");
+			PS.RunMonoBackgroundWithDebug (process ,ip: remoteIp);
+			var ps = PS.GetMonoProcess (process, remoteIp);
+			Assert.IsNotNull (ps, "#1");
+			Assert.IsTrue (ps.Any (), "#2");
+			foreach (var pid in ps) {
+				PS.Kill (pid.Item1, true, remoteIp);
+			}
+			ps = PS.GetMonoProcess (process, remoteIp);
+			Assert.IsNotNull (ps, "#1");
+			Assert.IsFalse (ps.Any (), "#2");
+		}
+
 		[TestCase ("")]
 		[TestCase (remote)]
 		public void GetProcesses (string remoteIp)

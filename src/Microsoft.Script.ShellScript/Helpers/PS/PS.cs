@@ -53,6 +53,11 @@ namespace Microsoft.Script
 			return Command.RunMonoBackground (executable).ExecuteBash (ip, user);
 		}
 
+		public static string RunMonoBackgroundWithDebug (string executable, int debugPort = 10000, string ip = null, string user = "pi")
+		{
+			return Command.RunMonoBackgroundWithDebug (executable, debugPort).ExecuteBash (ip, user);
+		}
+
 		static Tuple<int, int, int> ExtractTitleIndexes (string title)
 		{
 			var pid_position = title.IndexOf ("PID", StringComparison.Ordinal) + "PID".Length;

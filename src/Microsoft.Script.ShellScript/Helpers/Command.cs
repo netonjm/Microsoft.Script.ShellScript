@@ -93,6 +93,11 @@ namespace Microsoft.Script
 			return $"arp {command}";
 		}
 
+		internal static string RunMonoBackgroundWithDebug (string executable, int debugPort)
+		{
+			return $"nohup mono --debug --debugger-agent=transport=dt_socket,address=0.0.0.0:{debugPort},server=y {executable} >> /dev/null 2>&1 &";
+		}
+
 		public static string RunMonoBackground (string executable)
 		{
 			return $"nohup mono {executable} >> /dev/null 2>&1 &";
