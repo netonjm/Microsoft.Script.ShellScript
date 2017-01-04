@@ -40,5 +40,17 @@ namespace Microsoft.Script.ShellScriptTests
 			script.IO.FileExits (emptyFile, CommandFileType.File);
 			Assert.AreEqual (script.LastMessage, "0", "#5");
 		}
+
+
+		[Test]
+		public void GetArp ()
+		{
+			var d = ShellScript.Create ()
+					   .Network.Arp ("-a")
+					   .Write (s => s.LastMessage);
+
+			Assert.IsNotNull (d.LastMessage);
+			Assert.IsNotEmpty (d.LastMessage);
+		}
 	}
 }

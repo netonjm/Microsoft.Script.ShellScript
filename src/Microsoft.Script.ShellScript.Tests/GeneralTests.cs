@@ -30,17 +30,6 @@ namespace Microsoft.Script.ShellScriptTests
 
 		#region Network
 
-		[Test]
-		public void GetArp ()
-		{
-			var d = ShellScript.Create ()
-					   .Network.Arp ("-a")
-					   .Write (s => s.LastMessage);
-
-			Assert.IsNotNull (d.LastMessage);
-			Assert.IsNotEmpty (d.LastMessage);
-		}
-
 		[TestCase ("127.0.0.1", false)]
 		[TestCase (remote, true)]
 		public void TestSsh (string ip, bool value)
