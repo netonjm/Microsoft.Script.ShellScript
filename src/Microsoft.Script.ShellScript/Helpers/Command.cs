@@ -73,10 +73,11 @@ namespace Microsoft.Script
 			return "echo $BASHPID";
 		}
 
-		public static string KillProcess (int pid, bool force)
+		public static string KillProcess (int pid, bool force, bool sudo = false)
 		{
+			var sudoParam = sudo ? "sudo " : "";
 			var forceParam = force ? "-9 " : "";
-			return $"kill {forceParam}{pid}";
+			return $"{sudoParam}kill {forceParam}{pid}";
 		}
 
 		#endregion
@@ -93,14 +94,16 @@ namespace Microsoft.Script
 			return $"arp {command}";
 		}
 
-		internal static string RunMonoBackgroundWithDebug (string executable, int debugPort)
+		internal static string RunMonoBackgroundWithDebug (string executable, int debugPort, bool sudo=false)
 		{
-			return $"nohup mono --debug --debugger-agent=transport=dt_socket,address=0.0.0.0:{debugPort},server=y {executable} >> /dev/null 2>&1 &";
+			var sudoParam = sudo ? "sudo " : "";
+			return $"nohup {sudoParam}mono --debug --debugger-agent=transport=dt_socket,address=0.0.0.0:{debugPort},server=y {executable} >> /dev/null 2>&1 &";
 		}
 
-		public static string RunMonoBackground (string executable)
+		public static string RunMonoBackground (string executable, bool sudo = false)
 		{
-			return $"nohup mono {executable} >> /dev/null 2>&1 &";
+			var sudoParam = sudo ? "sudo " : "";
+			return $"nohup {sudoParam}mono {executable} >> /dev/null 2>&1 &";
 		}
 
 		public static string TestSsh (string ip, string user = "pi", int timeout = 2)

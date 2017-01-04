@@ -1,6 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
 using System.Linq;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Microsoft.Script.ShellScriptTests
 {
@@ -54,6 +56,18 @@ namespace Microsoft.Script.ShellScriptTests
 			Assert.IsFalse (processes.Any (), "#2");
 		}
 
+		[TestCase (remote, "/home/pi/deployed/RaspberryTestProject.exe")]
+		public void KillMonoProcess (string ip, string file)
+		{
+			var processes = PS.GetMonoProcess (file, ip);
+			Assert.IsTrue (processes.Any (), "#1");
+			foreach (var process in processes) {
+				PS.Kill (process.Item1, true, ip, sudo:true);
+			}
+			processes = PS.GetMonoProcess (file, ip);
+			Assert.IsFalse (processes.Any (), "#2");
+		}
+
 		[Ignore ("we need a long process to make this test pass")]
 		[TestCase (remote, remoteExecutable, "mono")]
 		public void RunBackground (string ip, string file, string processName)
@@ -87,15 +101,16 @@ namespace Microsoft.Script.ShellScriptTests
 		#region PS
 
 		[TestCase (remoteExecutable, remote)]
+		[Ignore ("we need a long process to make this test pass")]
 		public void ExecuteMonoProcess (string process, string remoteIp)
 		{
 			Assert.IsTrue (IO.File.Exist (process, remoteIp), "#0 file doesn't exists in remote");
-			PS.RunMonoBackgroundWithDebug (process ,ip: remoteIp);
+			PS.RunMonoBackgroundWithDebug (process ,ip: remoteIp, sudo: true);
 			var ps = PS.GetMonoProcess (process, remoteIp);
 			Assert.IsNotNull (ps, "#1");
 			Assert.IsTrue (ps.Any (), "#2");
 			foreach (var pid in ps) {
-				PS.Kill (pid.Item1, true, remoteIp);
+				PS.Kill (pid.Item1, true, remoteIp, sudo:true);
 			}
 			ps = PS.GetMonoProcess (process, remoteIp);
 			Assert.IsNotNull (ps, "#1");
@@ -114,7 +129,7 @@ namespace Microsoft.Script.ShellScriptTests
 		[TestCase ("/Applications/Safari.app/Contents/MacOS/Safari", "", "Safari")]
 		public void KillProcess (string process, string remoteIp, string processName)
 		{
-			System.Diagnostics.Process.Start (process);
+			Process.Start (process);
 			var processes = PS.GetList (remoteIp);
 			var filteredProcess = processes.Where (s => s.Item2.Contains (processName)).ToList ();
 			Assert.IsTrue (filteredProcess != null && filteredProcess.Any (), "#1");

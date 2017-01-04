@@ -12,7 +12,7 @@ namespace Microsoft.Script
 			return shell.Parent;
 		}
 	
-		static string ExecuteCommand (this string sender, string arguments = "", bool ignoreError = true, string workingDirectory = null, Dictionary<string, string> environmentVariables = null)
+		static string ExecuteCommand (this string sender, string arguments = "", bool ignoreError = true, string workingDirectory = null, Dictionary<string, string> environmentVariables = null, bool returnsPid = false)
 		{
 			string output, error;
 			ShellScript.ExecuteCommand (sender, out output, out error, arguments, workingDirectory, environmentVariables);
@@ -27,13 +27,13 @@ namespace Microsoft.Script
 			return Command.GetFullPath (command).ExecuteBash (ip, user);
 		}
 
-		public static string ExecuteBash (this string sender, string ip = null, string user = "pi", bool ignoreError = false, string workingDirectory = null, Dictionary<string, string> environmentVariables = null)
+		public static string ExecuteBash (this string sender, string ip = null, string user = "pi", bool ignoreError = false, string workingDirectory = null, Dictionary<string, string> environmentVariables = null, bool returnsPid = false)
 		{
 			if (string.IsNullOrEmpty (ip)) {
-				return "/bin/bash".ExecuteCommand ($"-c \"{sender}\"", ignoreError, workingDirectory, environmentVariables);
+				return "/bin/bash".ExecuteCommand ($"-c \"{sender}\"", ignoreError, workingDirectory, environmentVariables, returnsPid);
 			}
 			string output, error;
-			ShellScript.ExecuteCommand ("ssh", out output, out error, $"{user}@{ip} '{sender}'", workingDirectory, environmentVariables);
+			ShellScript.ExecuteCommand ("ssh", out output, out error, $"{user}@{ip} '{sender}'", workingDirectory, environmentVariables, returnsPid);
 			return output;
 		}
 	}

@@ -5,14 +5,14 @@ namespace Microsoft.Script
 {
 	public static class PS
 	{
-		public static void Kill (int pid, bool force = false, string ip = null, string user = "pi")
+		public static void Kill (int pid, bool force = false, string ip = null, string user = "pi", bool sudo = false)
 		{
-			Command.KillProcess (pid, force).ExecuteBash (ip, user);
+			Command.KillProcess (pid, force, sudo).ExecuteBash (ip, user);
 		}
 
 		public static int [] GetMonoPids (string ip = null, string user = "pi")
 		{
-			return GetPids ("mono", ip, user);
+			return GetPids ("mono", ip, user).Union (GetPids ("sudo mono", ip, user)).ToArray ();
 		}
 
 		public static Tuple<int, string> [] GetMonoProcesses (string ip = null, string user = "pi")
@@ -48,14 +48,18 @@ namespace Microsoft.Script
 				          .Select (s => int.Parse (s)).ToArray ();
 		}
 
-		public static string RunMonoBackground (string executable, string ip = null, string user = "pi")
+		public static int RunMonoBackground (string executable, string ip = null, string user = "pi", bool sudo = false)
 		{
-			return Command.RunMonoBackground (executable).ExecuteBash (ip, user);
+			var pid = Command.RunMonoBackground (executable, sudo)
+			                 .ExecuteBash (ip, user, returnsPid: true);
+			return int.Parse (pid);
 		}
 
-		public static string RunMonoBackgroundWithDebug (string executable, int debugPort = 10000, string ip = null, string user = "pi")
+		public static int RunMonoBackgroundWithDebug (string executable, int debugPort = 10000, string ip = null, string user = "pi", bool sudo = false)
 		{
-			return Command.RunMonoBackgroundWithDebug (executable, debugPort).ExecuteBash (ip, user);
+			var pid = Command.RunMonoBackgroundWithDebug (executable, debugPort, sudo)
+			                 .ExecuteBash (ip, user, returnsPid: true);
+			return int.Parse (pid);
 		}
 
 		static Tuple<int, int, int> ExtractTitleIndexes (string title)

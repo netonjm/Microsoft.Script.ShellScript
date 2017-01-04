@@ -45,7 +45,7 @@ namespace Microsoft.Script
 		}
 
 		public static void ExecuteCommand (string fileName, out string output, out string error, string arguments = "", string workingDirectory = null, 
-		                                   Dictionary<string, string> environmentVariables = null)
+		                                   Dictionary<string, string> environmentVariables = null, bool returnsPid = false)
 		{
 			using (var process = new Process ()) {
 				process.StartInfo.FileName = fileName;
@@ -66,7 +66,12 @@ namespace Microsoft.Script
 
 				process.Start ();
 				//* Read the output (or the error)
-				output = process.StandardOutput.ReadToEnd ().Trim ();
+				if (returnsPid) {
+					output = process.Id.ToString ();
+				} else {
+					output = process.StandardOutput.ReadToEnd ().Trim ();
+				}
+
 				error = process.StandardError.ReadToEnd ().Trim ();
 				process.WaitForExit ();
 			};
