@@ -90,6 +90,16 @@ namespace Microsoft.Script
 			return $"echo {sudoPassword} | sudo -S /usr/local/bin/nmap -sP {range}/24";
 		}
 
+		public static string GetHostName ()
+		{
+			return $"hostname";
+		}
+
+		public static string SetHostname (string hostName)
+		{
+			return $"sudo hostname {hostName}";
+		}
+
 		public static string GetArp (string command)
 		{
 			return $"arp {command}";

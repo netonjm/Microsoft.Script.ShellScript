@@ -104,6 +104,19 @@ namespace Microsoft.Script.ShellScriptTests
 			Assert.IsNotNull (raspberry.Any (), "#1");
 		}
 
+		[Test]
+		[TestCase (remote)]
+		public void GetSetHostname (string ip)
+		{
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
+			var actualHostname = Network.GetHostName (remoteIp);
+			Network.SetHostName ("TestHost", remoteIp);
+			Assert.AreEqual ("TestHost", Network.GetHostName (remoteIp), "#1");
+			Network.SetHostName (actualHostname, remoteIp);
+			Assert.AreEqual (actualHostname, Network.GetHostName (remoteIp), "#2");
+		}
+
 		#endregion
 
 		#region PS

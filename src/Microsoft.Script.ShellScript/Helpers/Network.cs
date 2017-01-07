@@ -10,6 +10,16 @@ namespace Microsoft.Script
 	{
 		#region Public static API
 
+		public static string GetHostName (IPAddress ip = null, string user = "pi")
+		{
+			return Command.GetHostName ().ExecuteBash (ip, user);
+		}
+
+		public static string SetHostName (string hostname, IPAddress ip = null, string user = "pi")
+		{
+			return Command.SetHostname (hostname).ExecuteBash (ip, user);
+		}
+
 		public static string Arp (string arguments, IPAddress ip = null, string user = "pi")
 		{
 			return Command.GetArp (arguments).ExecuteBash (ip, user);
