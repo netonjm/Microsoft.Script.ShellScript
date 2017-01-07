@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 
 namespace Microsoft.Script
 {
 	public static class PS
 	{
-		public static void Kill (int pid, bool force = false, string ip = null, string user = "pi", bool sudo = false)
+		public static void Kill (int pid, bool force = false, IPAddress ip = null, string user = "pi", bool sudo = false)
 		{
 			Command.KillProcess (pid, force, sudo).ExecuteBash (ip, user);
 		}
 
-		public static int [] GetMonoPids (string ip = null, string user = "pi")
+		public static int [] GetMonoPids (IPAddress ip = null, string user = "pi")
 		{
 			return GetPids ("mono", ip, user).Union (GetPids ("sudo mono", ip, user)).ToArray ();
 		}
 
-		public static Tuple<int, string> [] GetMonoProcesses (string ip = null, string user = "pi")
+		public static Tuple<int, string> [] GetMonoProcesses (IPAddress ip = null, string user = "pi")
 		{
 			var pids = GetMonoPids (ip, user);
 			var elements = new Tuple<int, string> [pids.Length];
@@ -26,13 +27,13 @@ namespace Microsoft.Script
 			return elements;
 		}
 
-		public static Tuple<int, string> [] GetMonoProcess (string processName, string ip = null, string user = "pi")
+		public static Tuple<int, string> [] GetMonoProcess (string processName, IPAddress ip = null, string user = "pi")
 		{
 			return GetMonoProcesses (ip, user).Where (s => s.Item2.EndsWith ($" {processName}", StringComparison.Ordinal))
 			                                           .ToArray ();
 		}
 
-		public static string GetProcess (int pid, string ip = null, string user = "pi")
+		public static string GetProcess (int pid, IPAddress ip = null, string user = "pi")
 		{
 			var processLine = Command.GetProcess (pid).ExecuteBash (ip, user)
 			                         .Split ('\n')
@@ -41,21 +42,21 @@ namespace Microsoft.Script
 			return processLine;
 		}
 
-		public static int[] GetPids (string process, string ip = null, string user = "pi")
+		public static int[] GetPids (string process, IPAddress ip = null, string user = "pi")
 		{
 			return Command.GetPids (process).ExecuteBash (ip, user)
 				          .Split (new [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
 				          .Select (s => int.Parse (s)).ToArray ();
 		}
 
-		public static int RunMonoBackground (string executable, string ip = null, string user = "pi", bool sudo = false)
+		public static int RunMonoBackground (string executable, IPAddress ip = null, string user = "pi", bool sudo = false)
 		{
 			var pid = Command.RunMonoBackground (executable, sudo)
 			                 .ExecuteBash (ip, user, returnsPid: true);
 			return int.Parse (pid);
 		}
 
-		public static int RunMonoBackgroundWithDebug (string executable, int debugPort = 10000, string ip = null, string user = "pi", bool sudo = false)
+		public static int RunMonoBackgroundWithDebug (string executable, int debugPort = 10000, IPAddress ip = null, string user = "pi", bool sudo = false)
 		{
 			var pid = Command.RunMonoBackgroundWithDebug (executable, debugPort, sudo)
 			                 .ExecuteBash (ip, user, returnsPid: true);
@@ -72,7 +73,7 @@ namespace Microsoft.Script
 			return new Tuple<int, int, int> (pid_position, args_position, user_position);
 		}
 
-		public static Tuple<int, string, string> [] GetDetailedList (string ip = null, string user = "pi")
+		public static Tuple<int, string, string> [] GetDetailedList (IPAddress ip = null, string user = "pi")
 		{
 			var variables = Command.GetDetailedProcess ().ExecuteBash (ip, user);
 			var lines = variables.Split ('\n');
@@ -100,7 +101,7 @@ namespace Microsoft.Script
 			return processes;
 		}
 
-		public static Tuple<int, string> [] GetList (string ip = null, string user = "pi")
+		public static Tuple<int, string> [] GetList (IPAddress ip = null, string user = "pi")
 		{
 			var variables = Command.GetDetailedProcess ().ExecuteBash (ip, user);
 			var lines = variables.Split ('\n');

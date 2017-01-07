@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Text;
 
 namespace Microsoft.Script
@@ -106,7 +107,7 @@ namespace Microsoft.Script
 			return $"nohup {sudoParam}mono {executable} >> /dev/null 2>&1 &";
 		}
 
-		public static string TestSsh (string ip, string user = "pi", int timeout = 2)
+		public static string TestSsh (IPAddress ip, string user = "pi", int timeout = 2)
 		{
 			return $"ssh -q -o BatchMode=yes -o ConnectTimeout={timeout} {user}@{ip} \'echo 2>&1\' && echo \'1\' || echo \'0\'";
 		}
@@ -120,7 +121,7 @@ namespace Microsoft.Script
 			return $"which {command}";
 		}
 
-		public static string CopyFileToRemote (string source, string destination, string ip, string user = "pi")
+		public static string CopyFileToRemote (string source, string destination, IPAddress ip, string user = "pi")
 		{
 			return $"scp {source} {user}@{ip}:{destination}";
 		}
@@ -146,7 +147,7 @@ namespace Microsoft.Script
 			return $"test -{type} {file} && echo \'1\' || echo \'0\'";
 		}
 
-		public static string GetFileFromRemote (string source, string destination, string ip, string user = "pi")
+		public static string GetFileFromRemote (string source, string destination, IPAddress ip, string user = "pi")
 		{
 			return $"scp {user}@{ip}:{source} {destination}";
 		}

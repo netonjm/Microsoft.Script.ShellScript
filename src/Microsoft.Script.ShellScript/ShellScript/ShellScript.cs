@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace Microsoft.Script
 {
@@ -9,7 +10,7 @@ namespace Microsoft.Script
 		public ShellScriptIO IO;
 		public ShellScriptNetwork Network;
 
-		public string RemoteIp
+		public IPAddress RemoteIp
 		{
 			get;
 			private set;
@@ -43,20 +44,20 @@ namespace Microsoft.Script
 			Network.MessageProcessed += m => LastMessage = m;
 		}
 
-		public ShellScript ConfigureRemoteIp(string ip, string user = "pi")
+		public ShellScript ConfigureRemoteIp (IPAddress ip, string user = "pi")
 		{
 			RemoteIp = ip;
 			RemoteUser = user;
 			return this;
 		}
 
-		public ShellScript Write(string message)
+		public ShellScript Write (string message)
 		{
 			Console.WriteLine(message);
 			return this;
 		}
 
-		public ShellScript Write(Func<ShellScript, string> action)
+		public ShellScript Write (Func<ShellScript, string> action)
 		{
 			Console.WriteLine(action(this));
 			return this;

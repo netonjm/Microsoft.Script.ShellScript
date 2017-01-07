@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Microsoft.Script
 {
 	public class ShellScriptNetwork
 	{
 		readonly internal ShellScript Parent;
-		readonly internal List<Tuple<string, string, string>> Computers;
+		readonly internal List<Tuple<IPAddress, string, string>> Computers;
 		string range, password;
 
 		internal event Action<string> MessageProcessed;
 
 		public ShellScriptNetwork (ShellScript script)
 		{
-			Computers = new List<Tuple<string, string, string>> ();
+			Computers = new List<Tuple<IPAddress, string, string>> ();
 			Parent = script;
 		}
 

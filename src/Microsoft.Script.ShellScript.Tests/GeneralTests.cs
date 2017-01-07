@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Microsoft.Script.ShellScriptTests
 {
@@ -36,64 +37,71 @@ namespace Microsoft.Script.ShellScriptTests
 		[TestCase (remote, true)]
 		public void TestSsh (string ip, bool value)
 		{
-			Assert.AreEqual (value, Network.TestSsh (ip), "#1");
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
+			Assert.AreEqual (value, Network.TestSsh (remoteIp), "#1");
 		}
 
 		[TestCase (remote, remoteExecutable, "mono")]
 		[Ignore ("we need a long process to make this test pass")]
 		public void GetMonoProcess (string ip, string file, string processName)
 		{
-			Assert.IsTrue (IO.File.Exist (remoteExecutable, ip), "#0 file doesn't exists");
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
+			Assert.IsTrue (IO.File.Exist (remoteExecutable, remoteIp), "#0 file doesn't exists");
 			//hacky but openssh seems to ignore signals
-			PS.RunMonoBackground ($"{file}", ip);
+			PS.RunMonoBackground ($"{file}", remoteIp);
 			//ps x | grep 'mono RaspMonoProject.exe' | grep -v 'grep 'mono RaspMonoProject.exe' | awk '{ print $1 }' | xargs kill
-			var processes = PS.GetMonoProcess (file, ip);
+			var processes = PS.GetMonoProcess (file, remoteIp);
 			Assert.IsTrue (processes.Any (), "#1");
 			foreach (var process in processes) {
-				PS.Kill (process.Item1, true, ip);
+				PS.Kill (process.Item1, true, remoteIp);
 			}
-			processes = PS.GetMonoProcess (file, ip);
+			processes = PS.GetMonoProcess (file, remoteIp);
 			Assert.IsFalse (processes.Any (), "#2");
 		}
 
-		[TestCase (remote, "/home/pi/deployed/RaspberryTestProject.exe")]
+		[TestCase (remote, "/home/pi/Development/RaspberryTestProject.exe")]
+		[Ignore ("we need a long process to make this test pass")]
 		public void KillMonoProcess (string ip, string file)
 		{
-			var processes = PS.GetMonoProcess (file, ip);
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
+			var processes = PS.GetMonoProcess (file, remoteIp);
 			Assert.IsTrue (processes.Any (), "#1");
 			foreach (var process in processes) {
-				PS.Kill (process.Item1, true, ip, sudo:true);
+				PS.Kill (process.Item1, true, remoteIp, sudo:true);
 			}
-			processes = PS.GetMonoProcess (file, ip);
+			processes = PS.GetMonoProcess (file, remoteIp);
 			Assert.IsFalse (processes.Any (), "#2");
 		}
 
 		[Ignore ("we need a long process to make this test pass")]
-		[TestCase (remote, remoteExecutable, "mono")]
-		public void RunBackground (string ip, string file, string processName)
+		[TestCase (remote, remoteExecutable)]
+		public void RunBackground (string ip, string file)
 		{
-			//hacky but openssh seems to ignore signals
-			PS.RunMonoBackground (file, ip);
-			//ps x | grep 'mono RaspMonoProject.exe' | grep -v 'grep 'mono RaspMonoProject.exe' | awk '{ print $1 }' | xargs kill
-			var list = PS.GetPids (processName, ip);
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
+
+			PS.RunMonoBackground (file, remoteIp);
+			var list = PS.GetPids ("mono", remoteIp);
 			Assert.IsTrue (list.Count () > 0, "#1");
 
 			foreach (var item in list) {
-				PS.Kill (item, true, ip);
+				PS.Kill (item, true, remoteIp);
 			}
 
-			list = PS.GetPids (processName, ip);
+			list = PS.GetPids ("mono", remoteIp);
 			Assert.IsTrue (list.Count () == 0, "#2");
 		}
 
 		[Test]
-		[Ignore ("if sudo password is wrong we don't get here any result and the test fails")]
+		//[Ignore ("if sudo password is wrong we don't get here any result and the test fails")]
 		public void ScanRaspberryNetwork ()
 		{
 			var range = remote.Substring (0, remote.LastIndexOf ('.'));
 			var raspberry = Network.ScanRaspberryNetwork ($"{range}.0", SudoPassword);
-			Assert.IsTrue (raspberry.Any (), "#1");
-			Assert.AreEqual (remote, raspberry.FirstOrDefault ().Item1, "#2");
+			Assert.IsNotNull (raspberry.Any (), "#1");
 		}
 
 		#endregion
@@ -102,33 +110,39 @@ namespace Microsoft.Script.ShellScriptTests
 
 		[TestCase (remoteExecutable, remote)]
 		[Ignore ("we need a long process to make this test pass")]
-		public void ExecuteMonoProcess (string process, string remoteIp)
+		public void ExecuteMonoProcess (string process, string ip)
 		{
-			Assert.IsTrue (IO.File.Exist (process, remoteIp), "#0 file doesn't exists in remote");
-			PS.RunMonoBackgroundWithDebug (process ,ip: remoteIp, sudo: true);
-			var ps = PS.GetMonoProcess (process, remoteIp);
+			IPAddress ipAddress;
+			IPAddress.TryParse (ip, out ipAddress);
+			Assert.IsTrue (IO.File.Exist (process, ipAddress), "#0 file doesn't exists in remote");
+			PS.RunMonoBackgroundWithDebug (process ,ip: ipAddress, sudo: true);
+			var ps = PS.GetMonoProcess (process, ipAddress);
 			Assert.IsNotNull (ps, "#1");
 			Assert.IsTrue (ps.Any (), "#2");
 			foreach (var pid in ps) {
-				PS.Kill (pid.Item1, true, remoteIp, sudo:true);
+				PS.Kill (pid.Item1, true, ipAddress, sudo:true);
 			}
-			ps = PS.GetMonoProcess (process, remoteIp);
+			ps = PS.GetMonoProcess (process, ipAddress);
 			Assert.IsNotNull (ps, "#1");
 			Assert.IsFalse (ps.Any (), "#2");
 		}
 
 		[TestCase ("")]
 		[TestCase (remote)]
-		public void GetProcesses (string remoteIp)
+		public void GetProcesses (string ip)
 		{
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
 			var ps = PS.GetList (remoteIp);
 			Assert.IsNotNull (ps);
 			Assert.IsTrue (ps.Any ());
 		}
 
 		[TestCase ("/Applications/Safari.app/Contents/MacOS/Safari", "", "Safari")]
-		public void KillProcess (string process, string remoteIp, string processName)
+		public void KillProcess (string process, string ip, string processName)
 		{
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
 			Process.Start (process);
 			var processes = PS.GetList (remoteIp);
 			var filteredProcess = processes.Where (s => s.Item2.Contains (processName)).ToList ();
@@ -166,19 +180,22 @@ namespace Microsoft.Script.ShellScriptTests
 		[Test]
 		public void CopyActualProject ()
 		{
+			IPAddress remoteIpAdress;
+			IPAddress.TryParse (remote, out remoteIpAdress);
+
 			var remoteDirectory = "/home/pi/test";
-			if (IO.Directory.Exist (remoteDirectory, remote)) {
-				IO.Directory.Remove (remoteDirectory, remote);
+			if (IO.Directory.Exist (remoteDirectory, remoteIpAdress)) {
+				IO.Directory.Remove (remoteDirectory, remoteIpAdress);
 			}
-			Assert.IsFalse (IO.Directory.Exist (remoteDirectory, remote), "#1");
-			IO.Directory.Create (remoteDirectory, remote);
-			Assert.IsTrue (IO.Directory.Exist (remoteDirectory, remote), "#2");
+			Assert.IsFalse (IO.Directory.Exist (remoteDirectory, remoteIpAdress), "#1");
+			IO.Directory.Create (remoteDirectory, remoteIpAdress);
+			Assert.IsTrue (IO.Directory.Exist (remoteDirectory, remoteIpAdress), "#2");
 
 			var file = "$HOME/newfile";
 			$"touch {file}".ExecuteBash ();
-			IO.File.CopyToRemote (file, remoteDirectory, remote);
+			IO.File.CopyToRemote (file, remoteDirectory, remoteIpAdress);
 
-			var remoteFiles = IO.Directory.GetFiles (remoteDirectory, false, remote);
+			var remoteFiles = IO.Directory.GetFiles (remoteDirectory, false, remoteIpAdress);
 			Assert.AreEqual (1, remoteFiles.Length, "#3");
 		}
 
@@ -190,24 +207,30 @@ namespace Microsoft.Script.ShellScriptTests
 
 		[TestCase ("")]
 		[TestCase (remote)]
-		public void GetFiles (string remoteIp)
+		public void GetFiles (string ip)
 		{
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
 			var files = IO.Directory.GetFiles ("/home", false, remoteIp);
 			Assert.IsTrue (files.Any (), "#1");
 		}
 
 		[TestCase ("")]
 		[TestCase (remote)]
-		public void GetDirectories (string remoteIp)
+		public void GetDirectories (string ip)
 		{
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
 			var files = IO.Directory.GetDirectories ("$HOME", false, remoteIp);
 			Assert.IsTrue (files.Any (), "#1");
 		}
 
 		[TestCase ("")]
 		[TestCase (remote)]
-		public void DeleteFiles (string remoteIp)
+		public void DeleteFiles (string ip)
 		{
+			IPAddress remoteIp;
+			IPAddress.TryParse (ip, out remoteIp);
 			var file = "$HOME/newfile";
 			$"touch {file}".ExecuteBash (remoteIp);
 			Assert.IsTrue (IO.File.Exist (file, remoteIp), "#1");

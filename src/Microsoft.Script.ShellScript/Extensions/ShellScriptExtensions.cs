@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Microsoft.Script
 {
@@ -22,14 +23,14 @@ namespace Microsoft.Script
 			return output;
 		}
 
-		public static string FullPath (this string command, string ip = null, string user = "pi")
+		public static string FullPath (this string command, IPAddress ip = null, string user = "pi")
 		{
 			return Command.GetFullPath (command).ExecuteBash (ip, user);
 		}
 
-		public static string ExecuteBash (this string sender, string ip = null, string user = "pi", bool ignoreError = false, string workingDirectory = null, Dictionary<string, string> environmentVariables = null, bool returnsPid = false)
+		public static string ExecuteBash (this string sender, IPAddress ip = null, string user = "pi", bool ignoreError = false, string workingDirectory = null, Dictionary<string, string> environmentVariables = null, bool returnsPid = false)
 		{
-			if (string.IsNullOrEmpty (ip)) {
+			if (ip == null) {
 				return "/bin/bash".ExecuteCommand ($"-c \"{sender}\"", ignoreError, workingDirectory, environmentVariables, returnsPid);
 			}
 			string output, error;

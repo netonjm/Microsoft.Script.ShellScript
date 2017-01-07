@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Microsoft.Script
 {
@@ -20,18 +21,18 @@ namespace Microsoft.Script
 			return applicationsData.Select (s => (string)s [0]).ToArray ();
 		}
 
-		public static void SetEnvirontmentVariable (string name, string value, string ip = null, string user = "pi")
+		public static void SetEnvirontmentVariable (string name, string value, IPAddress ip = null, string user = "pi")
 		{
 			Command.SetEnvirontmentVariable (name, value).ExecuteBash (ip, user);
 		}
 
-		public static string GetEnvirontmentVariable (string name, string ip = null, string user = "pi")
+		public static string GetEnvirontmentVariable (string name, IPAddress ip = null, string user = "pi")
 		{
 			return Command.GetEnvirontmentVariable (name).ExecuteBash (ip, user);
 		}
 
 	
-		public static Dictionary<string, string> GetEnvirontmentVariables (string ip = null, string user = "pi")
+		public static Dictionary<string, string> GetEnvirontmentVariables (IPAddress ip = null, string user = "pi")
 		{
 			var variables = Command.GetEnvirontmentVariable ().ExecuteBash (ip, user);
 			var variablesDictionary = new Dictionary<string, string> ();
