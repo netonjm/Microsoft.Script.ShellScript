@@ -28,8 +28,7 @@ namespace Microsoft.Script.IO
 
 		public static string GetFromRemote (string source, string destination, IPAddress ip, string user = "pi")
 		{
-			var fullPath = "scp".FullPath (ip, user);
-			return fullPath.ExecuteBash ($"{user}@{ip}:{source} {destination}");
+			return Command.GetFileFromRemote (source, destination, ip, user).ExecuteBash ();
 		}
 	}
 }
