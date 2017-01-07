@@ -108,13 +108,13 @@ namespace Microsoft.Script
 		internal static string RunMonoBackgroundWithDebug (string executable, int debugPort, bool sudo=false)
 		{
 			var sudoParam = sudo ? "sudo " : "";
-			return $"nohup {sudoParam}mono --debug --debugger-agent=transport=dt_socket,address=0.0.0.0:{debugPort},server=y {executable} >> /dev/null 2>&1 &";
+			return $"nohup {sudoParam}mono --debug --debugger-agent=transport=dt_socket,address=0.0.0.0:{debugPort},server=y {executable}";
 		}
 
 		public static string RunMonoBackground (string executable, bool sudo = false)
 		{
 			var sudoParam = sudo ? "sudo " : "";
-			return $"nohup {sudoParam}mono {executable} >> /dev/null 2>&1 &";
+			return $"nohup {sudoParam}mono {executable}";
 		}
 
 		public static string TestSsh (IPAddress ip, string user = "pi", int timeout = 2)

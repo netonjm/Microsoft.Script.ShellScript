@@ -11,7 +11,7 @@ namespace Microsoft.Script.IO
 			var command = Command.GetFiles (directory,
 												  includeHiddenFiles,
 												  CommandFileType.Directory)
-									   .ExecuteBash (ip, user, true)
+									   .ExecuteBash (ip, user, ignoreError: true)
 									   .Split ('\n')
 									   .Skip (1)
 									   .ToArray ();
@@ -36,7 +36,7 @@ namespace Microsoft.Script.IO
 		public static string [] GetFiles (string directory, bool includeHiddenFiles = true, IPAddress ip = null, string user = "pi")
 		{
 			return Command.GetFiles (directory, includeHiddenFiles, CommandFileType.File)
-								.ExecuteBash (ip, user, true).Split ('\n');
+								.ExecuteBash (ip, user, ignoreError: true).Split ('\n');
 		}
 	}
 }

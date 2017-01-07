@@ -167,6 +167,14 @@ namespace Microsoft.Script.ShellScriptTests
 			Assert.IsTrue (filteredProcess == null || filteredProcess.Count == 0, "#2");
 		}
 
+		[Ignore ("development purposes")]
+		[TestCase ("/Applications/Xamarin\\ Studio.app/Contents/MacOS/XamarinStudio")]
+		public void OpenXamarinStudio (string process)
+		{
+			process.ExecuteBash (environmentVariables: new Dictionary<string, string> () { {"MONODEVELOP_SDB_TEST","1"}}
+			                     ,returnsPid: true, handleOutput: false);
+		}
+
 		#endregion
 
 		#region Environtment Variables

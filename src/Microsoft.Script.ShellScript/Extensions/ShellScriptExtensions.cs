@@ -28,13 +28,21 @@ namespace Microsoft.Script
 			return Command.GetFullPath (command).ExecuteBash (ip, user);
 		}
 
-		public static string ExecuteBash (this string sender, IPAddress ip = null, string user = "pi", bool ignoreError = false, string workingDirectory = null, Dictionary<string, string> environmentVariables = null, bool returnsPid = false)
+		public static string ExecuteBash (this string sender, 
+		                                  IPAddress ip = null, 
+		                                  string user = "pi", 
+		                                  string workingDirectory = null,
+		                                  bool ignoreError = false, 
+		                                  bool returnsPid = false, 
+		                                  bool handleOutput = true,
+		                                  Dictionary<string, string> environmentVariables = null)
 		{
+			string wait = !handleOutput ? " >> /dev/null 2>&1 &" : "";
 			if (ip == null) {
-				return "/bin/bash".ExecuteCommand ($"-c \"{sender}\"", ignoreError, workingDirectory, environmentVariables, returnsPid);
+				return "/bin/bash".ExecuteCommand ($"-c \"{sender}{wait}\"", ignoreError, workingDirectory, environmentVariables, returnsPid);
 			}
 			string output, error;
-			ShellScript.ExecuteCommand ("ssh", out output, out error, $"{user}@{ip} '{sender}'", workingDirectory, environmentVariables, returnsPid);
+			ShellScript.ExecuteCommand ("ssh", out output, out error, $"{user}@{ip} '{sender}{wait}'", workingDirectory, environmentVariables, returnsPid);
 			return output;
 		}
 	}

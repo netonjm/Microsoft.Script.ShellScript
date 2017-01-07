@@ -52,14 +52,14 @@ namespace Microsoft.Script
 		public static int RunMonoBackground (string executable, IPAddress ip = null, string user = "pi", bool sudo = false)
 		{
 			var pid = Command.RunMonoBackground (executable, sudo)
-			                 .ExecuteBash (ip, user, returnsPid: true);
+			                 .ExecuteBash (ip, user, returnsPid: true, handleOutput: false);
 			return int.Parse (pid);
 		}
 
 		public static int RunMonoBackgroundWithDebug (string executable, int debugPort = 10000, IPAddress ip = null, string user = "pi", bool sudo = false)
 		{
 			var pid = Command.RunMonoBackgroundWithDebug (executable, debugPort, sudo)
-			                 .ExecuteBash (ip, user, returnsPid: true);
+			                 .ExecuteBash (ip, user, returnsPid: true, handleOutput: false);
 			return int.Parse (pid);
 		}
 
