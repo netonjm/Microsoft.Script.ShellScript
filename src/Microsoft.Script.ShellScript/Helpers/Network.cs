@@ -30,13 +30,13 @@ namespace Microsoft.Script
 			return Command.TestSsh (ip, user, timeout).ExecuteBash () == "1";
 		}
 
-		public static List<Tuple<IPAddress, string, string>> ScanRaspberryNetwork (string range, string password)
+		public static List<Tuple<IPAddress, string, string>> ScanRaspberryNetwork (string range, string password, string user = "pi")
 		{
 			//TODO: force send sudo password command provokes a empty error, we need better way to do this
 			var response = Command.GetNetworkConnections (range, password)
 										.ExecuteBash (ignoreError: true);
 			var computers = GetNetworkComputers (response);
-			return FilterRaspberry (computers);
+			return FilterRaspberry (computers, user);
 		}
 
 		#endregion
@@ -80,10 +80,18 @@ namespace Microsoft.Script
 			return elements;
 		}
 
-		static List<Tuple<IPAddress, string, string>> FilterRaspberry (List<Tuple<IPAddress, string, string>> data)
+		static List<Tuple<IPAddress, string, string>> FilterRaspberry (List<Tuple<IPAddress, string, string>> data, string user = "pi")
 		{
-			return data.Where (s => s.Item2.ToUpper ().StartsWith ("B8:27:EB", StringComparison.Ordinal))
-					   .ToList ();
+			var macFilters = new [] { 
+				"B8:27:EB", //raspberry 3
+				"D4:7B" }; //raspberry zero
+			var result = new List<Tuple<IPAddress, string, string>> ();
+			var filtered = data.Where (s => macFilters.Any (f => s.Item2.ToUpper ().StartsWith (f, StringComparison.Ordinal))).ToList ();
+			foreach (var item in filtered) {
+				var realHost = GetHostName (item.Item1, user);
+				result.Add (new Tuple<IPAddress, string, string> (item.Item1, item.Item2, realHost));
+			}
+			return result;
 		}
 
 		#endregion
