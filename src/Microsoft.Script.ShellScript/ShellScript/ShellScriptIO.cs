@@ -40,7 +40,7 @@ namespace Microsoft.Script
 		public ShellScript FileExits (string source, CommandFileType fileType)
 		{
 			var command = Command.FileExists (
-				source.FullPath (Parent.RemoteIp, Parent.RemoteUser),
+				source.Which (Parent.RemoteIp, Parent.RemoteUser),
 				fileType)
 			                           .ExecuteBash (Parent.RemoteIp, Parent.RemoteUser);
 			OnMessageProcessed (command);

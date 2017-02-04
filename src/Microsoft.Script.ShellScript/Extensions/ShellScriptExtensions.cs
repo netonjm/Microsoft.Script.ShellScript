@@ -23,9 +23,9 @@ namespace Microsoft.Script
 			return output;
 		}
 
-		public static string FullPath (this string command, IPAddress ip = null, string user = "pi")
+		public static string Which (this string command, IPAddress ip = null, string user = "pi")
 		{
-			return Command.GetFullPath (command).ExecuteBash (ip, user);
+			return Command.Which (command).ExecuteBash (ip, user);
 		}
 
 		public static string ExecuteBash (this string sender, 

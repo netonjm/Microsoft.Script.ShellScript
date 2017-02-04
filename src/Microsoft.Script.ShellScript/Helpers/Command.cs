@@ -126,7 +126,7 @@ namespace Microsoft.Script
 
 		#region File system
 
-		public static string GetFullPath (string command)
+		public static string Which (string command)
 		{
 			return $"which {command}";
 		}
@@ -186,7 +186,7 @@ namespace Microsoft.Script
 		public static string GenerateOsaScript (string command)
 		{
 			command = command.Replace ('\"', '\'');
-			var osascript = "osascript".FullPath ();
+			var osascript = "osascript".Which ();
 			return $"{osascript} -e \'{command}\'";
 		}
 
