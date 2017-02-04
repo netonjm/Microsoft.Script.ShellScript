@@ -167,11 +167,6 @@ namespace Microsoft.Script
 			return $"ls {parameter}";
 		}
 
-		public static string GetMonoDirectory ()
-		{
-			return GetFullPath ("mono");
-		}
-
 		public static string MkDir (string directory)
 		{
 			return $"mkdir {directory}";
