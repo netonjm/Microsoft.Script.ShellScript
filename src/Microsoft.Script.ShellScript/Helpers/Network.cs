@@ -10,7 +10,7 @@ namespace Microsoft.Script
 	{
 		#region Public static API
 
-		public static string GetHostName (IPAddress ip = null, string user = "pi")
+		public static string GetHostName (this IPAddress ip, string user = "pi")
 		{
 			return Command.GetHostName ().ExecuteBash (ip, user);
 		}
@@ -20,12 +20,22 @@ namespace Microsoft.Script
 			return Command.SetHostname (hostname).ExecuteBash (ip, user);
 		}
 
+		public static string SetHostName (this IPAddress ip, string hostname, string user = "pi")
+		{
+			return SetHostName (hostname, ip, user);
+		}
+
+		public static string Arp (this IPAddress ip, string arguments, string user = "pi")
+		{
+			return Arp (arguments, ip, user);
+		}
+
 		public static string Arp (string arguments, IPAddress ip = null, string user = "pi")
 		{
 			return Command.GetArp (arguments).ExecuteBash (ip, user);
 		}
 
-		public static bool TestSsh (IPAddress ip, string user = "pi", int timeout = 2)
+		public static bool TestSsh (this IPAddress ip, string user = "pi", int timeout = 2)
 		{
 			return Command.TestSsh (ip, user, timeout).ExecuteBash () == "1";
 		}
